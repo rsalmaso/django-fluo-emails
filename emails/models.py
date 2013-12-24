@@ -62,7 +62,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         max_length=255,
         unique=True,
         db_index=True,
-        verbose_name=_('mail'),
+        verbose_name=_('name'),
     )
     subject = models.CharField(
         max_length=255,
