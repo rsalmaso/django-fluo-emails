@@ -23,7 +23,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 from django.conf import settings
 from django.core.mail import EmailMessage
-from django.template import Template, RequestContext
+from django.template import Context, RequestContext, Template
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.auth import get_user_model
@@ -80,13 +80,13 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
     def __str__(self):
         return self.name
 
-    def send(self, request, to=None, cc=None, bcc=None, context=None, fail_silently=True):
+    def send(self, request=None, to=None, cc=None, bcc=None, context=None, fail_silently=True):
         site = Site.objects.get_current()
         subject_template = Template(self.subject)
         body_template = Template(self.body)
 
         context = {} if context is None else context
-        context = RequestContext(request, context)
+        context = Context(context) if request is None else RequestContext(request, context)
 
         subject = subject_template.render(context)
         body = body_template.render(context)
