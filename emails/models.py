@@ -26,10 +26,8 @@ from django.core.mail import EmailMessage
 from django.template import Context, RequestContext, Template
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
-from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from fluo.db import models
-User = get_user_model()
 
 
 def _get_default_from_email():
