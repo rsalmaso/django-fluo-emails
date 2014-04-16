@@ -20,10 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+# Email/Attachment adapted from https://github.com/stefanfoulis/django-database-email-backend
+# Copyright (C) 2011 Stefan Foulis and contributors.
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 from django.conf import settings
 from django.core.mail import EmailMessage
-from django.template import Context, RequestContext, Template
+from django.template import Template, RequestContext, Context
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.sites.models import Site
@@ -137,3 +140,99 @@ class EmailTemplateTranslation(models.TranslationModel):
         }
 
 
+@python_2_unicode_compatible
+class Email(models.TimestampModel):
+    from_email = models.CharField(
+        max_length=255,
+        default=_get_default_from_email,
+        verbose_name=_('from email'),
+    )
+    to_emails = models.CharField(
+        max_length=255,
+        default='',
+        verbose_name=_('to emails'),
+    )
+    cc_emails = models.CharField(
+        max_length=255,
+        default='',
+        verbose_name=_('cc emails'),
+    )
+    bcc_emails = models.CharField(
+        max_length=255,
+        default='',
+        verbose_name=_('bcc emails'),
+    )
+    all_recipients = models.TextField(
+        blank=True,
+        default='',
+        verbose_name=_('recipients'),
+    )
+    headers =  models.TextField(
+        blank=True,
+        default='',
+        verbose_name=_('headers'),
+    )
+    subject = models.CharField(
+        max_length=255,
+        verbose_name=_('subject'),
+    )
+    body = models.TextField(
+        verbose_name=_('body'),
+    )
+    raw = models.TextField(
+        blank=True,
+        default='',
+        verbose_name=_('raw message'),
+    )
+
+    class Meta:
+        #ordering = ('name',)
+        verbose_name = _('email')
+        verbose_name_plural = _('emails')
+
+    def __str__(self):
+        return _('Email from "%(from_email)s" to "%(to_emails)s" sent at %(sent_at)s about "%(subject)s"') % {
+            'from_email': self.from_email,
+            'to_emails': self.to_emails,
+            'sent_at': self.created_at,
+            'subject': self.subject,
+        }
+
+    @property
+    def attachment_count(self):
+        if not hasattr(self, 'attachment_count_cache'):
+            self.attachment_count_cache = self.attachments.count()
+        return self.attachment_count_cache
+
+
+class Attachment(models.Model):
+    email = models.ForeignKey(
+        Email,
+        related_name='attachments',
+        verbose_name=_('email'),
+    )
+    filename = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('filename'),
+    )
+    content = models.Base64Field(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('content'),
+    )
+    mimetype = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('mimetype'),
+    )
+
+    class Meta:
+        #ordering = ('name',)
+        verbose_name = _('attachment')
+        verbose_name_plural = _('attachments')
