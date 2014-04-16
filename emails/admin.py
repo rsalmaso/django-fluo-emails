@@ -21,9 +21,13 @@
 # THE SOFTWARE.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
+from django.conf import settings
 from fluo import forms
 from fluo import admin
 from .models import EmailTemplate, EmailTemplateTranslation
+
+
+MAX_LANGUAGES = len(settings.LANGUAGES)
 
 
 class EmailTemplateTranslationForm(forms.ModelForm):
@@ -31,6 +35,8 @@ class EmailTemplateTranslationForm(forms.ModelForm):
 class EmailTemplateTranslationInline(admin.TabularInline):
     model = EmailTemplateTranslation
     form = EmailTemplateTranslationForm
+    extra = MAX_LANGUAGES
+    max_num = MAX_LANGUAGES
 class EmailTemplateAdminForm(forms.ModelForm):
     pass
 class EmailTemplateAdmin(admin.ModelAdmin):
