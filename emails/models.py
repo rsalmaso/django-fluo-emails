@@ -52,6 +52,27 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         default=_get_default_from_email,
         verbose_name=_('from email'),
     )
+    default_to = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_('default to'),
+        help_text=_('comma separated value'),
+    )
+    default_cc = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_('default cc'),
+        help_text=_('comma separated value'),
+    )
+    default_bcc = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_('default bcc'),
+        help_text=_('comma separated value'),
+    )
     name = models.CharField(
         max_length=255,
         unique=True,
@@ -95,10 +116,16 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
 
         if isinstance(to, basestring):
             to = [ to ]
+        elif self.default_to:
+            to = self.default_to.split(',')
         if isinstance(cc, basestring):
             cc = [ cc ]
+        elif self.default_cc:
+            cc = self.default_cc.split(',')
         if isinstance(bcc, basestring):
             bcc = [ bcc ]
+        elif self.default_bcc:
+            bcc = self.default_bcc.split(',')
 
         kwargs = {
             'subject': subject_template.render(context),
