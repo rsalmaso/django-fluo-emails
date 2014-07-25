@@ -25,7 +25,7 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 from django.conf import settings
-from django.core.mail import EmailMessage
+from django.core.mail import get_connection, EmailMultiAlternatives
 from django.template import Template, RequestContext, Context
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
@@ -38,16 +38,9 @@ def _get_default_from_email():
 
 
 class EmailTemplateManager(models.Manager):
-    def send(self, name, request, to=None, cc=None, bcc=None, context=None, fail_silently=True):
+    def send(self, name, **kwargs):
         mail = self.get(name=name)
-        mail.send(
-            request=request,
-            to=to,
-            cc=cc,
-            bcc=bcc,
-            context=context,
-            fail_silently=fail_silently,
-        )
+        return mail.send(**kwargs)
 
 
 @python_2_unicode_compatible
@@ -86,16 +79,19 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
     def __str__(self):
         return self.name
 
-    def send(self, request=None, to=None, cc=None, bcc=None, context=None, fail_silently=True):
+    def send(self, request=None, to=None, cc=None, bcc=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None):
         site = Site.objects.get_current()
-        subject_template = Template(self.subject)
-        body_template = Template(self.body)
+        subject_template = Template(self.translate().subject)
+        body_template = Template(self.translate().body)
 
         context = {} if context is None else context
         context = Context(context) if request is None else RequestContext(request, context)
 
-        subject = subject_template.render(context)
-        body = body_template.render(context)
+        connection = connection or get_connection(
+            username=auth_user,
+            password=auth_password,
+            fail_silently=fail_silently,
+        )
 
         if isinstance(to, basestring):
             to = [ to ]
@@ -104,18 +100,29 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         if isinstance(bcc, basestring):
             bcc = [ bcc ]
 
-        email = EmailMessage(
-            subject=subject,
-            body=body,
-            from_email=self.from_email,
-            to=to,
-            cc=cc,
-            bcc=bcc,
-            headers={
+        kwargs = {
+            'subject': subject_template.render(context),
+            'body': body_template.render(context),
+            'from_email': self.from_email,
+            'to': to,
+            'cc': cc,
+            'bcc': bcc,
+            'headers': {
                 'Reply-to': 'noreply@%s' % site.domain,
             },
-        )
+            'connection': connection,
+            'attachments': attachments,
+            'alternatives': alternatives,
+        }
+
+        email = EmailMultiAlternatives(**kwargs)
+        if self.body_html:
+            body_html_template = Template(self.translate().body_html)
+            email.attach_alternative(body_html_template.render(context), 'text/html')
+
         email.send(fail_silently=fail_silently)
+
+        return email
 
 
 @python_2_unicode_compatible
