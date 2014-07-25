@@ -72,6 +72,11 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
     body = models.TextField(
         verbose_name=_('body'),
     )
+    body_html = models.TextField(
+        blank=True,
+        default='',
+        verbose_name=_('html body'),
+    )
 
     class Meta:
         ordering = ('name',)
@@ -125,6 +130,11 @@ class EmailTemplateTranslation(models.TranslationModel):
         verbose_name=_('subject'),
     )
     body = models.TextField(
+        verbose_name=_('body'),
+    )
+    body_html = models.TextField(
+        blank=True,
+        default='',
         verbose_name=_('body'),
     )
 
