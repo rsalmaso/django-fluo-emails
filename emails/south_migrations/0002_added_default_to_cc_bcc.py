@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2007-2014, Raffaele Salmaso <raffaele@salmaso.org>
+# Copyright (C) 2007-2015, Raffaele Salmaso <raffaele@salmaso.org>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,49 +20,38 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models
 
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Email'
-        db.create_table(u'emails_email', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created_at', self.gf('fluo.db.models.fields.CreationDateTimeField')(default=datetime.datetime.now, blank=True)),
-            ('last_modified_at', self.gf('fluo.db.models.fields.ModificationDateTimeField')(default=datetime.datetime.now, blank=True)),
-            ('from_email', self.gf('django.db.models.fields.CharField')(default=u'Gnammo <info@gnammo.com>', max_length=255)),
-            ('to_emails', self.gf('django.db.models.fields.CharField')(default=u'', max_length=255)),
-            ('cc_emails', self.gf('django.db.models.fields.CharField')(default=u'', max_length=255)),
-            ('bcc_emails', self.gf('django.db.models.fields.CharField')(default=u'', max_length=255)),
-            ('all_recipients', self.gf('django.db.models.fields.TextField')(default=u'', blank=True)),
-            ('headers', self.gf('django.db.models.fields.TextField')(default=u'', blank=True)),
-            ('subject', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('body', self.gf('django.db.models.fields.TextField')()),
-            ('raw', self.gf('django.db.models.fields.TextField')(default=u'', blank=True)),
-        ))
-        db.send_create_signal(u'emails', ['Email'])
+        # Adding field 'EmailTemplate.default_to'
+        db.add_column(u'emails_emailtemplate', 'default_to',
+                      self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True),
+                      keep_default=False)
 
-        # Adding model 'Attachment'
-        db.create_table(u'emails_attachment', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('email', self.gf('django.db.models.fields.related.ForeignKey')(related_name=u'attachments', to=orm['emails.Email'])),
-            ('filename', self.gf('django.db.models.fields.CharField')(default=None, max_length=255, null=True, blank=True)),
-            ('content_base64', self.gf('fluo.db.models.fields.Base64Field')(default=None, null=True, db_column='content', blank=True)),
-            ('mimetype', self.gf('django.db.models.fields.CharField')(default=None, max_length=255, null=True, blank=True)),
-        ))
-        db.send_create_signal(u'emails', ['Attachment'])
+        # Adding field 'EmailTemplate.default_cc'
+        db.add_column(u'emails_emailtemplate', 'default_cc',
+                      self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True),
+                      keep_default=False)
+
+        # Adding field 'EmailTemplate.default_bcc'
+        db.add_column(u'emails_emailtemplate', 'default_bcc',
+                      self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True),
+                      keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting model 'Email'
-        db.delete_table(u'emails_email')
+        # Deleting field 'EmailTemplate.default_to'
+        db.delete_column(u'emails_emailtemplate', 'default_to')
 
-        # Deleting model 'Attachment'
-        db.delete_table(u'emails_attachment')
+        # Deleting field 'EmailTemplate.default_cc'
+        db.delete_column(u'emails_emailtemplate', 'default_cc')
+
+        # Deleting field 'EmailTemplate.default_bcc'
+        db.delete_column(u'emails_emailtemplate', 'default_bcc')
 
 
     models = {
@@ -92,7 +81,11 @@ class Migration(SchemaMigration):
         u'emails.emailtemplate': {
             'Meta': {'ordering': "(u'name',)", 'object_name': 'EmailTemplate'},
             'body': ('django.db.models.fields.TextField', [], {}),
+            'body_html': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
             'created_at': ('fluo.db.models.fields.CreationDateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
+            'default_bcc': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'default_cc': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'default_to': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'from_email': ('django.db.models.fields.CharField', [], {'default': "u'Gnammo <info@gnammo.com>'", 'max_length': '255'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'last_modified_at': ('fluo.db.models.fields.ModificationDateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
@@ -102,6 +95,7 @@ class Migration(SchemaMigration):
         u'emails.emailtemplatetranslation': {
             'Meta': {'unique_together': "((u'language', u'parent'),)", 'object_name': 'EmailTemplateTranslation'},
             'body': ('django.db.models.fields.TextField', [], {}),
+            'body_html': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language': ('django.db.models.fields.CharField', [], {'max_length': '5', 'db_index': 'True'}),
             'parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'translations'", 'to': u"orm['emails.EmailTemplate']"}),
