@@ -29,6 +29,7 @@ from django.core.mail import get_connection, EmailMultiAlternatives
 from django.template import Template, RequestContext, Context
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils import six
 from django.contrib.sites.models import Site
 from fluo.db import models
 
@@ -114,15 +115,15 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
             fail_silently=fail_silently,
         )
 
-        if isinstance(to, basestring):
+        if isinstance(to, six.string_types):
             to = [ to ]
         elif self.default_to:
             to = self.default_to.split(',')
-        if isinstance(cc, basestring):
+        if isinstance(cc, six.string_types):
             cc = [ cc ]
         elif self.default_cc:
             cc = self.default_cc.split(',')
-        if isinstance(bcc, basestring):
+        if isinstance(bcc, six.string_types):
             bcc = [ bcc ]
         elif self.default_bcc:
             bcc = self.default_bcc.split(',')
