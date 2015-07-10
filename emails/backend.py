@@ -89,7 +89,10 @@ class EmailBackend(BaseEmailBackend):
                 stream_created = self.open()
                 for message in email_messages:
                     self._save_on_db(message)
-                    self._write_message(message)
+                    try:
+                        self._write_message(message)
+                    except:
+                        pass
                 if stream_created:
                     self.close()
             except:
