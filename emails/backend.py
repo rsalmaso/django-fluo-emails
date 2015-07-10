@@ -24,12 +24,12 @@
 # Copyright (C) 2011 Stefan Foulis and contributors.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
-from email.MIMEBase import MIMEBase
 import sys
 import threading
 from django.core.mail.backends.base import BaseEmailBackend
 from django.utils.encoding import smart_text
 from django.utils import six
+from django.utils.six.moves.email_mime_base import MIMEBase
 from .models import Email, Attachment
 
 
