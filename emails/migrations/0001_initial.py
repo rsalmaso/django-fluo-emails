@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('filename', models.CharField(default=None, max_length=255, null=True, verbose_name='filename', blank=True)),
-                ('content_base64', fluo.db.models.fields.Base64Field(default=None, null=True, verbose_name='content', db_column=b'content', blank=True)),
+                ('content_base64', fluo.db.models.fields.Base64Field(default=None, null=True, verbose_name='content', db_column='content', blank=True)),
                 ('mimetype', models.CharField(default=None, max_length=255, null=True, verbose_name='mimetype', blank=True)),
             ],
             options={
