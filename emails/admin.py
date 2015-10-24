@@ -123,7 +123,7 @@ class EmailAdmin(admin.ModelAdmin):
         if not self.has_change_permission(request, None):
             raise PermissionDenied
         attachment = Attachment.objects.get(email__id=email_id, id=attachment_id, filename=filename)
-        response = HttpResponse(attachment.content, mimetype=attachment.mimetype or 'application/octet-stream')
+        response = HttpResponse(attachment.content, content_type=attachment.mimetype or 'application/octet-stream')
         response["Content-Length"] = len(attachment.content)
         return response
 
