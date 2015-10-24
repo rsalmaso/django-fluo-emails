@@ -261,7 +261,7 @@ class Attachment(models.Model):
         default=None,
         verbose_name=_('filename'),
     )
-    content = models.Base64Field(
+    content = models.BinaryField(
         null=True,
         blank=True,
         default=None,
