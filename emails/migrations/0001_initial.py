@@ -36,10 +36,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Attachment',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('filename', models.CharField(null=True, default=None, max_length=255, blank=True, verbose_name='filename')),
-                ('content', models.BinaryField(blank=True, null=True, default=None, verbose_name='content')),
-                ('mimetype', models.CharField(null=True, default=None, max_length=255, blank=True, verbose_name='mimetype')),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
+                ('filename', models.CharField(null=True, default=None, verbose_name='filename', blank=True, max_length=255)),
+                ('content', models.BinaryField(null=True, default=None, verbose_name='content', blank=True)),
+                ('mimetype', models.CharField(null=True, default=None, verbose_name='mimetype', blank=True, max_length=255)),
             ],
             options={
                 'verbose_name_plural': 'attachments',
@@ -49,16 +49,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Email',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('created_at', fluo.db.models.fields.CreationDateTimeField(blank=True, default=django.utils.timezone.now, verbose_name='created', editable=False)),
-                ('last_modified_at', fluo.db.models.fields.ModificationDateTimeField(blank=True, default=django.utils.timezone.now, verbose_name='modified', editable=False)),
-                ('from_email', models.CharField(default=emails.models._get_default_from_email, max_length=255, verbose_name='from email')),
-                ('to_emails', models.CharField(default='', max_length=255, verbose_name='to emails')),
-                ('cc_emails', models.CharField(default='', max_length=255, verbose_name='cc emails')),
-                ('bcc_emails', models.CharField(default='', max_length=255, verbose_name='bcc emails')),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
+                ('created_at', fluo.db.models.fields.CreationDateTimeField(default=django.utils.timezone.now, verbose_name='created', editable=False, blank=True)),
+                ('last_modified_at', fluo.db.models.fields.ModificationDateTimeField(default=django.utils.timezone.now, verbose_name='modified', editable=False, blank=True)),
+                ('from_email', models.CharField(default=emails.models._get_default_from_email, verbose_name='from email', max_length=255)),
+                ('to_emails', models.CharField(default='', verbose_name='to emails', blank=True, max_length=255)),
+                ('cc_emails', models.CharField(default='', verbose_name='cc emails', blank=True, max_length=255)),
+                ('bcc_emails', models.CharField(default='', verbose_name='bcc emails', blank=True, max_length=255)),
                 ('all_recipients', models.TextField(default='', verbose_name='recipients', blank=True)),
                 ('headers', models.TextField(default='', verbose_name='headers', blank=True)),
-                ('subject', models.CharField(max_length=255, verbose_name='subject')),
+                ('subject', models.CharField(verbose_name='subject', max_length=255)),
                 ('body', models.TextField(verbose_name='body')),
                 ('raw', models.TextField(default='', verbose_name='raw message', blank=True)),
             ],
@@ -70,17 +70,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EmailTemplate',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('created_at', fluo.db.models.fields.CreationDateTimeField(blank=True, default=django.utils.timezone.now, verbose_name='created', editable=False)),
-                ('last_modified_at', fluo.db.models.fields.ModificationDateTimeField(blank=True, default=django.utils.timezone.now, verbose_name='modified', editable=False)),
-                ('from_email', models.CharField(default=emails.models._get_default_from_email, max_length=255, verbose_name='from email')),
-                ('default_to', models.CharField(verbose_name='default to', null=True, help_text='comma separated value', blank=True, max_length=255)),
-                ('default_cc', models.CharField(verbose_name='default cc', null=True, help_text='comma separated value', blank=True, max_length=255)),
-                ('default_bcc', models.CharField(verbose_name='default bcc', null=True, help_text='comma separated value', blank=True, max_length=255)),
-                ('name', models.CharField(db_index=True, unique=True, max_length=255, verbose_name='name')),
-                ('subject', models.CharField(max_length=255, verbose_name='subject')),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
+                ('created_at', fluo.db.models.fields.CreationDateTimeField(default=django.utils.timezone.now, verbose_name='created', editable=False, blank=True)),
+                ('last_modified_at', fluo.db.models.fields.ModificationDateTimeField(default=django.utils.timezone.now, verbose_name='modified', editable=False, blank=True)),
+                ('from_email', models.CharField(default=emails.models._get_default_from_email, verbose_name='from email', max_length=255)),
+                ('default_to', models.CharField(null=True, verbose_name='default to', help_text='comma separated value', max_length=255, blank=True)),
+                ('default_cc', models.CharField(null=True, verbose_name='default cc', help_text='comma separated value', max_length=255, blank=True)),
+                ('default_bcc', models.CharField(null=True, verbose_name='default bcc', help_text='comma separated value', max_length=255, blank=True)),
+                ('name', models.CharField(db_index=True, unique=True, verbose_name='name', max_length=255)),
+                ('subject', models.CharField(verbose_name='subject', max_length=255)),
                 ('body', models.TextField(verbose_name='body')),
                 ('body_html', models.TextField(default='', verbose_name='html body', blank=True)),
+                ('noreply', models.BooleanField(default=False, verbose_name='no reply', help_text='should add a Reply-to with noreply@domain header')),
             ],
             options={
                 'verbose_name_plural': 'email templates',
@@ -91,12 +92,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EmailTemplateTranslation',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('language', models.CharField(db_index=True, max_length=5, choices=[('en', 'English'), ('it', 'Italian')], verbose_name='language')),
-                ('subject', models.CharField(max_length=255, verbose_name='subject')),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
+                ('language', models.CharField(db_index=True, verbose_name='language', choices=[('en', 'English'), ('de', 'German'), ('fr', 'French'), ('es', 'Spanish'), ('it', 'Italian')], max_length=5)),
+                ('subject', models.CharField(verbose_name='subject', max_length=255)),
                 ('body', models.TextField(verbose_name='body')),
                 ('body_html', models.TextField(default='', verbose_name='body', blank=True)),
-                ('parent', models.ForeignKey(related_name='translations', verbose_name='parent', to='emails.EmailTemplate')),
+                ('parent', models.ForeignKey(related_name='translations', to='emails.EmailTemplate', verbose_name='parent')),
             ],
             options={
                 'verbose_name_plural': 'mail translations',
@@ -106,7 +107,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='attachment',
             name='email',
-            field=models.ForeignKey(related_name='attachments', verbose_name='email', to='emails.Email'),
+            field=models.ForeignKey(related_name='attachments', to='emails.Email', verbose_name='email'),
         ),
         migrations.AlterUniqueTogether(
             name='emailtemplatetranslation',
