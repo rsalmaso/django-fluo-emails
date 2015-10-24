@@ -101,7 +101,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
     def __str__(self):
         return self.name
 
-    def send(self, request=None, to=None, cc=None, bcc=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None):
+    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None):
         site = Site.objects.get_current()
         subject_template = Template(self.translate().subject)
         body_template = Template(self.translate().body)
@@ -131,7 +131,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         kwargs = {
             'subject': subject_template.render(context),
             'body': body_template.render(context),
-            'from_email': self.from_email,
+            'from_email': self.from_email if from_email is None else from_email,
             'to': to,
             'cc': cc,
             'bcc': bcc,
