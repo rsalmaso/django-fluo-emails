@@ -81,9 +81,9 @@ class AttachmentInlineAdmin(admin.TabularInline):
 class EmailAdmin(admin.ModelAdmin):
     list_display = ('from_email', 'to_emails', 'subject', 'body_stripped', 'created_at', 'attachment_count')
     date_hierarchy = 'created_at'
-    search_fields =  ('from_email', 'to_emails', 'subject', 'body',)
+    search_fields =  ('from_email', 'to_emails', 'subject', 'body', 'body_html')
     exclude = ('raw', 'body')
-    readonly_fields = ('from_email', 'to_emails', 'cc_emails', 'bcc_emails', 'subject', 'created_at', 'attachment_count', 'all_recipients', 'headers', 'body_br',)
+    readonly_fields = ('from_email', 'to_emails', 'cc_emails', 'bcc_emails', 'subject', 'created_at', 'all_recipients', 'headers', 'body', 'body_br',)
     inlines = (AttachmentInlineAdmin,)
 
     def queryset(self, request):
@@ -130,7 +130,7 @@ class EmailAdmin(admin.ModelAdmin):
     def body_br(self, obj):
         return linebreaks_filter(obj.body)
     body_br.allow_tags = True
-    body_br.short_description = _('body')
-    body_br.admin_order_field = 'body'
+    body_br.short_description = _('body html')
+    body_br.admin_order_field = 'body html'
 if settings.EMAIL_BACKEND == 'emails.backend.EmailBackend':
     admin.site.register(Email, EmailAdmin)
