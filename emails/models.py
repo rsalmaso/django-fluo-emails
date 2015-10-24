@@ -30,7 +30,6 @@ from django.template import Template, RequestContext, Context
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import six
-from django.contrib.sites.models import Site
 from fluo.db import models
 
 
@@ -101,8 +100,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
     def __str__(self):
         return self.name
 
-    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None):
-        site = Site.objects.get_current()
+    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None):
         subject_template = Template(self.translate().subject)
         body_template = Template(self.translate().body)
 
@@ -128,6 +126,8 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         elif self.default_bcc:
             bcc = self.default_bcc.split(',')
 
+        headers = headers = {} if headers is None else headers
+
         kwargs = {
             'subject': subject_template.render(context),
             'body': body_template.render(context),
@@ -135,9 +135,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
             'to': to,
             'cc': cc,
             'bcc': bcc,
-            'headers': {
-                'Reply-to': 'noreply@%s' % site.domain,
-            },
+            'headers': headers,
             'connection': connection,
             'attachments': attachments,
             'alternatives': alternatives,
