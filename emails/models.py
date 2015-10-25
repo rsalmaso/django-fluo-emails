@@ -92,6 +92,11 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         default='',
         verbose_name=_('html body'),
     )
+    noreply = models.BooleanField(
+        default=False,
+        verbose_name=_("no reply"),
+        help_text=_("should add a Reply-to with noreply@domain header"),
+    )
 
     class Meta:
         ordering = ('name',)
@@ -129,6 +134,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
             bcc = self.default_bcc.split(',')
 
         headers = headers = {} if headers is None else headers
+        noreply = noreply or self.noreply
         if noreply and 'Reply-to' not in headers:
             headers['Reply-to'] = 'noreply@%s' % site.domain
 
