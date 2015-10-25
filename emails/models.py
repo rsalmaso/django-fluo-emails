@@ -202,16 +202,19 @@ class Email(models.TimestampModel):
     )
     to_emails = models.CharField(
         max_length=255,
+        blank=True,
         default='',
         verbose_name=_('to emails'),
     )
     cc_emails = models.CharField(
         max_length=255,
+        blank=True,
         default='',
         verbose_name=_('cc emails'),
     )
     bcc_emails = models.CharField(
         max_length=255,
+        blank=True,
         default='',
         verbose_name=_('bcc emails'),
     )
