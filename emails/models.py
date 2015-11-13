@@ -139,7 +139,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
             headers['Reply-to'] = 'noreply@%s' % site.domain
 
         kwargs = {
-            'subject': subject_template.render(context),
+            'subject': subject_template.render(context).replace("\n", ""),
             'body': body_template.render(context),
             'from_email': self.from_email if from_email is None else from_email,
             'to': to,
