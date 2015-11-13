@@ -104,6 +104,11 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         verbose_name=_("no reply"),
         help_text=_("should add a Reply-to with noreply@domain header"),
     )
+    notes = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name=_("notes"),
+    )
 
     class Meta:
         ordering = ('name',)
