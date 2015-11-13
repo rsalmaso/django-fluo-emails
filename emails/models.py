@@ -74,6 +74,13 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         verbose_name=_('default bcc'),
         help_text=_('comma separated value'),
     )
+    default_reply_to = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_('default reply_to'),
+        help_text=_('comma separated value'),
+    )
     name = models.CharField(
         max_length=255,
         unique=True,
@@ -106,7 +113,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
     def __str__(self):
         return self.name
 
-    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False):
+    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False):
         site = Site.objects.get_current()
         subject_template = Template(self.translate().subject)
         body_template = Template(self.translate().body)
@@ -132,11 +139,15 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
             bcc = [ bcc ]
         elif self.default_bcc:
             bcc = self.default_bcc.split(',')
+        if isinstance(reply_to, six.string_types):
+            reply_to = [ reply_to ]
+        elif self.default_reply_to:
+            reply_to = self.default_reply_to.split(',')
 
         headers = headers = {} if headers is None else headers
         noreply = noreply or self.noreply
-        if noreply and 'Reply-to' not in headers:
-            headers['Reply-to'] = 'noreply@%s' % site.domain
+        if noreply and not reply_to and 'Reply-to' not in headers:
+            reply_to = 'noreply@%s' % site.domain
 
         kwargs = {
             'subject': subject_template.render(context).replace("\n", ""),
@@ -145,6 +156,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
             'to': to,
             'cc': cc,
             'bcc': bcc,
+            'reply_to': reply_to,
             'headers': headers,
             'connection': connection,
             'attachments': attachments,
