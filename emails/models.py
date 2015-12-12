@@ -152,7 +152,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         headers = headers = {} if headers is None else headers
         noreply = noreply or self.noreply
         if noreply and not reply_to and 'Reply-to' not in headers:
-            reply_to = 'noreply@%s' % site.domain
+            reply_to = ['noreply@%s' % site.domain]
 
         kwargs = {
             'subject': subject_template.render(context).replace("\n", ""),
