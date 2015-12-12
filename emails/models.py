@@ -118,10 +118,10 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
     def __str__(self):
         return self.name
 
-    def create(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False):
+    def create(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False, language=None):
         site = Site.objects.get_current()
-        subject_template = Template(self.translate().subject)
-        body_template = Template(self.translate().body)
+        subject_template = Template(self.translate(language=language).subject)
+        body_template = Template(self.translate(language=language).body)
 
         context = {} if context is None else context
         context = Context(context) if request is None else RequestContext(request, context)
@@ -170,12 +170,12 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
 
         email = EmailMultiAlternatives(**kwargs)
         if self.body_html:
-            body_html_template = Template(self.translate().body_html)
+            body_html_template = Template(self.translate(language=language).body_html)
             email.attach_alternative(body_html_template.render(context), 'text/html')
 
         return email
 
-    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False):
+    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False, language=None):
         email = self.create(
             request=request,
             from_email=from_email,
@@ -191,6 +191,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
             connection=connection,
             headers=headers,
             noreply=noreply,
+            language=language,
         )
 
         email.send(fail_silently=fail_silently)
