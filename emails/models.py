@@ -118,7 +118,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
     def __str__(self):
         return self.name
 
-    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False):
+    def create(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False):
         site = Site.objects.get_current()
         subject_template = Template(self.translate().subject)
         body_template = Template(self.translate().body)
@@ -172,6 +172,26 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         if self.body_html:
             body_html_template = Template(self.translate().body_html)
             email.attach_alternative(body_html_template.render(context), 'text/html')
+
+        return email
+
+    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False):
+        email = self.create(
+            request=request,
+            from_email=from_email,
+            to=to,
+            cc=cc,
+            bcc=bcc,
+            reply_to=reply_to,
+            context=context,
+            attachments=attachments,
+            alternatives=alternatives,
+            auth_user=auth_user,
+            auth_password=auth_password,
+            connection=connection,
+            headers=headers,
+            noreply=noreply,
+        )
 
         email.send(fail_silently=fail_silently)
 
