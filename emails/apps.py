@@ -21,13 +21,10 @@
 # THE SOFTWARE.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
-from .version import get_version
-
-VERSION = (0, 1, 0, "final", 0)
-
-__version__  = get_version(VERSION)
-__author__  = "Raffaele Salmaso"
-__email__ = "raffaele@salmaso.org"
+from django.apps import AppConfig
+from django.utils.translation import ugettext_lazy as _
 
 
-default_app_config = "emails.apps.EmailsConfig"
+class EmailsConfig(AppConfig):
+    name = "emails"
+    verbose_name = _("Emails")
