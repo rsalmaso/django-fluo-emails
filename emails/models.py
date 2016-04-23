@@ -38,7 +38,11 @@ def _get_default_from_email():
     return settings.DEFAULT_FROM_EMAIL
 
 
-class EmailTemplateManager(models.Manager):
+class EmailTemplateQuerySet(models.QuerySet):
+    pass
+
+
+class EmailTemplateManager(models.Manager.from_queryset(EmailTemplateQuerySet)):
     def send(self, name, **kwargs):
         mail = self.get(name=name)
         return mail.send(**kwargs)
