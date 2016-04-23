@@ -86,7 +86,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name_plural': 'email templates',
                 'verbose_name': 'email template',
-                'ordering': ('name',),
+                'ordering': ['name'],
             },
         ),
         migrations.CreateModel(

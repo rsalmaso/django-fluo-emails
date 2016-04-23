@@ -117,7 +117,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
     )
 
     class Meta:
-        ordering = ('name',)
+        ordering = ['name']
         verbose_name = _('email template')
         verbose_name_plural = _('email templates')
 
@@ -228,7 +228,7 @@ class EmailTemplateTranslation(models.TranslationModel):
     )
 
     class Meta:
-        unique_together = (('language', 'parent',),)
+        unique_together = [('language', 'parent')]
         verbose_name = _('mail translation')
         verbose_name_plural = _('mail translations')
 

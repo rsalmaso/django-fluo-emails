@@ -60,13 +60,13 @@ class AttachmentInlineAdmin(admin.TabularInline):
     extra = 0
     can_delete = False
     max_num = 0
-    readonly_fields = ('filename', 'mimetype', 'content', 'file_link',)
-    fields = ('file_link', 'mimetype',)
+    readonly_fields = ['filename', 'mimetype', 'content', 'file_link']
+    fields = ['file_link', 'mimetype']
 
     def file_link(self, obj):
         if obj.pk is None:
             return ''
-        url_name = '%s:%s_email_attachment' % (self.admin_site.name, self.model._meta.app_label,)
+        url_name = '%s:%s_email_attachment' % (self.admin_site.name, self.model._meta.app_label)
         kwargs = {
             'email_id': str(obj.email_id),
             'attachment_id': str(obj.id),
@@ -79,12 +79,12 @@ class AttachmentInlineAdmin(admin.TabularInline):
         }
     file_link.allow_tags = True
 class EmailAdmin(admin.ModelAdmin):
-    list_display = ('from_email', 'to_emails', 'subject', 'body_stripped', 'created_at', 'attachment_count')
+    list_display = ['from_email', 'to_emails', 'subject', 'body_stripped', 'created_at', 'attachment_count']
     date_hierarchy = 'created_at'
-    search_fields =  ('from_email', 'to_emails', 'subject', 'body', 'body_html')
-    exclude = ('raw', 'body')
-    readonly_fields = ('from_email', 'to_emails', 'cc_emails', 'bcc_emails', 'subject', 'created_at', 'all_recipients', 'headers', 'body', 'body_br',)
-    inlines = (AttachmentInlineAdmin,)
+    search_fields =  ['from_email', 'to_emails', 'subject', 'body', 'body_html']
+    exclude = ['raw', 'body']
+    readonly_fields = ['from_email', 'to_emails', 'cc_emails', 'bcc_emails', 'subject', 'created_at', 'all_recipients', 'headers', 'body', 'body_br']
+    inlines = [AttachmentInlineAdmin]
 
     def queryset(self, request):
         queryset = super(EmailAdmin, self).queryset(request)
@@ -132,5 +132,7 @@ class EmailAdmin(admin.ModelAdmin):
     body_br.allow_tags = True
     body_br.short_description = _('body html')
     body_br.admin_order_field = 'body html'
+
+
 if settings.EMAIL_BACKEND == 'emails.backend.EmailBackend':
     admin.site.register(Email, EmailAdmin)
