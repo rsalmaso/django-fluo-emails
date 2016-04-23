@@ -1,15 +1,14 @@
-docs/_build
+syntax: glob
 .svnignore
 .DS_Store
-.svn
 Thumbs.db
 .directory
-
-syntax: glob
 *.swp
 *~
 *-
 *.pyc
 *.kpf
-*.w
 
+syntax: regexp
+\.git
+\.svn
