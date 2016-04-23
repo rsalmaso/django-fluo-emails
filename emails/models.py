@@ -124,10 +124,10 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
     def __str__(self):
         return self.name
 
-    def create(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False, language=None):
+    def create(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False, language=None, subject=None, body=None):
         site = Site.objects.get_current()
-        subject_template = Template(self.translate(language=language).subject)
-        body_template = Template(self.translate(language=language).body)
+        subject_template = Template(self.translate(language=language).subject if subject is None else subject)
+        body_template = Template(self.translate(language=language).body if body is None else body)
 
         context = {} if context is None else context
         context = Context(context) if request is None else RequestContext(request, context)
@@ -181,7 +181,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
 
         return email
 
-    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False, language=None):
+    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False, language=None, subject=None, body=None):
         email = self.create(
             request=request,
             from_email=from_email,
@@ -198,6 +198,8 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
             headers=headers,
             noreply=noreply,
             language=language,
+            subject=subject,
+            body=body,
         )
 
         email.send(fail_silently=fail_silently)
