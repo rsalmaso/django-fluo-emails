@@ -42,7 +42,7 @@ MAX_LANGUAGES = len(settings.LANGUAGES)
 
 class EmailTemplateTranslationForm(forms.ModelForm):
     pass
-class EmailTemplateTranslationInline(admin.TabularInline):
+class EmailTemplateTranslationInline(admin.StackedInline):
     model = EmailTemplateTranslation
     form = EmailTemplateTranslationForm
     extra = MAX_LANGUAGES
