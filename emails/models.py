@@ -211,6 +211,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
 class EmailTemplateTranslation(models.TranslationModel):
     parent = models.ForeignKey(
         EmailTemplate,
+        on_delete=models.CASCADE,
         related_name='translations',
         verbose_name=_('parent'),
     )
@@ -310,6 +311,7 @@ class Email(models.TimestampModel):
 class Attachment(models.Model):
     email = models.ForeignKey(
         Email,
+        on_delete=models.CASCADE,
         related_name='attachments',
         verbose_name=_('email'),
     )

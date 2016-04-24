@@ -97,7 +97,7 @@ class Migration(migrations.Migration):
                 ('subject', models.CharField(verbose_name='subject', max_length=255)),
                 ('body', models.TextField(verbose_name='body')),
                 ('body_html', models.TextField(default='', verbose_name='body', blank=True)),
-                ('parent', models.ForeignKey(related_name='translations', to='emails.EmailTemplate', verbose_name='parent')),
+                ('parent', models.ForeignKey(related_name='translations', to='emails.EmailTemplate', on_delete=models.CASCADE, verbose_name='parent')),
             ],
             options={
                 'verbose_name_plural': 'mail translations',
@@ -107,7 +107,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='attachment',
             name='email',
-            field=models.ForeignKey(related_name='attachments', to='emails.Email', verbose_name='email'),
+            field=models.ForeignKey(related_name='attachments', to='emails.Email', on_delete=models.CASCADE, verbose_name='email'),
         ),
         migrations.AlterUniqueTogether(
             name='emailtemplatetranslation',
