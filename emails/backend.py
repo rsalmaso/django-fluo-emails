@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Copyright (C) 2007-2016, Raffaele Salmaso <raffaele@salmaso.org>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,7 +21,6 @@
 # EmailBackend adapted from https://github.com/stefanfoulis/django-database-email-backend
 # Copyright (C) 2011 Stefan Foulis and contributors.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 import sys
 import threading
 from django.core.mail.backends.base import BaseEmailBackend
@@ -37,7 +34,7 @@ class EmailBackend(BaseEmailBackend):
     def __init__(self, *args, **kwargs):
         self.stream = kwargs.pop('stream', sys.stdout)
         self._lock = threading.RLock()
-        super(EmailBackend, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _write_message(self, message):
         msg = message.message()

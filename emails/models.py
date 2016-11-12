@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Copyright (C) 2007-2016, Raffaele Salmaso <raffaele@salmaso.org>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,12 +21,10 @@
 # Email/Attachment adapted from https://github.com/stefanfoulis/django-database-email-backend
 # Copyright (C) 2011 Stefan Foulis and contributors.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 from django.conf import settings
 from django.core.mail import get_connection, EmailMultiAlternatives
 from django.template import Template, RequestContext, Context
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils import six
 from django.contrib.sites.models import Site
 from fluo.db import models
@@ -50,7 +46,6 @@ class EmailTemplateManager(models.Manager.from_queryset(EmailTemplateQuerySet)):
         return mail.send(**kwargs)
 
 
-@python_2_unicode_compatible
 class EmailTemplate(models.TimestampModel, models.I18NModel):
     objects = EmailTemplateManager()
 
@@ -207,7 +202,6 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         return email
 
 
-@python_2_unicode_compatible
 class EmailTemplateTranslation(models.TranslationModel):
     parent = models.ForeignKey(
         EmailTemplate,
@@ -240,7 +234,6 @@ class EmailTemplateTranslation(models.TranslationModel):
         }
 
 
-@python_2_unicode_compatible
 class Email(models.TimestampModel):
     from_email = models.CharField(
         max_length=255,

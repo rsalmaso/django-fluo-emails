@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Copyright (C) 2007-2016, Raffaele Salmaso <raffaele@salmaso.org>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,7 +21,6 @@
 # EmailAdmin/AttachmentInlineAdmin adapted from https://github.com/stefanfoulis/django-database-email-backend
 # Copyright (C) 2011 Stefan Foulis and contributors.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 from functools import update_wrapper
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -87,7 +84,7 @@ class EmailAdmin(admin.ModelAdmin):
     inlines = [AttachmentInlineAdmin]
 
     def queryset(self, request):
-        queryset = super(EmailAdmin, self).queryset(request)
+        queryset = super().queryset(request)
         return queryset.annotate(attachment_count_cache=Count('attachments'))
 
     def attachment_count(self, obj):
@@ -102,7 +99,7 @@ class EmailAdmin(admin.ModelAdmin):
     body_stripped.admin_order_field = 'body'
 
     def get_urls(self):
-        urlpatterns = super(EmailAdmin, self).get_urls()
+        urlpatterns = super().get_urls()
         from django.conf.urls import url
 
         def wrap(view):
