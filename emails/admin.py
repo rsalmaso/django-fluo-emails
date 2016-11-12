@@ -24,13 +24,13 @@
 from functools import update_wrapper
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import linebreaks_filter
 from fluo import admin
 from fluo import forms
+from fluo.urls import reverse
 from .models import EmailTemplate, EmailTemplateTranslation, Email, Attachment
 
 
