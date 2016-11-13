@@ -40,6 +40,7 @@ class EmailTemplateQuerySet(models.QuerySet):
 
 class EmailTemplateManager(models.Manager.from_queryset(EmailTemplateQuerySet)):
     use_for_related_fields = True
+    silence_use_for_related_fields_deprecation = True
 
     def send(self, name, **kwargs):
         mail = self.get(name=name)
@@ -112,6 +113,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
     )
 
     class Meta:
+        base_manager_name = "objects"
         ordering = ['name']
         verbose_name = _('email template')
         verbose_name_plural = _('email templates')
