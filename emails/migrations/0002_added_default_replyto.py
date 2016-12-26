@@ -33,9 +33,4 @@ class Migration(migrations.Migration):
             name='default_reply_to',
             field=models.CharField(max_length=255, blank=True, null=True, verbose_name='default reply_to', help_text='comma separated value'),
         ),
-        migrations.AlterField(
-            model_name='emailtemplatetranslation',
-            name='language',
-            field=models.CharField(max_length=5, choices=[('it', 'Italian'), ('en', 'English')], db_index=True, verbose_name='language'),
-        ),
     ]

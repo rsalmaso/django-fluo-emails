@@ -18,6 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from django.conf import settings
 from django.db import models, migrations
 import emails.models
 import django.utils.timezone
@@ -90,7 +91,7 @@ class Migration(migrations.Migration):
             name='EmailTemplateTranslation',
             fields=[
                 ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
-                ('language', models.CharField(db_index=True, verbose_name='language', choices=[('en', 'English'), ('de', 'German'), ('fr', 'French'), ('es', 'Spanish'), ('it', 'Italian')], max_length=5)),
+                ('language', models.CharField(db_index=True, verbose_name='language', choices=settings.LANGUAGES, max_length=5)),
                 ('subject', models.CharField(verbose_name='subject', max_length=255)),
                 ('body', models.TextField(verbose_name='body')),
                 ('body_html', models.TextField(default='', verbose_name='body', blank=True)),
