@@ -29,6 +29,7 @@ from django.db.models import Count
 from django.http import HttpResponse
 from django.template.defaultfilters import linebreaks_filter
 from django.utils.safestring import mark_safe
+from django.utils.text import Truncator
 from django.utils.translation import gettext_lazy as _
 from fluo import admin, forms
 from fluo.urls import reverse
@@ -114,10 +115,8 @@ class EmailAdmin(admin.ModelAdmin):
     attachment_count.admin_order_field = 'attachment_count_cache'
 
     def body_stripped(self, obj):
-        if obj.body and len(obj.body) > 100:
-            return obj.body[:100] + ' [...]'
-        return obj.body
     body_stripped.short_description = _('body[...]')
+        return Truncator(obj).chars(120, truncate='...')
     body_stripped.admin_order_field = 'body'
 
     def get_urls(self):
