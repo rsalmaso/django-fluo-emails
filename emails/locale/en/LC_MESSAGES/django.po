@@ -1,0 +1,161 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-27 23:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: admin.py:115
+msgid "attachment count"
+msgstr ""
+
+#: admin.py:120 models.py:97 models.py:219 models.py:224 models.py:278
+msgid "body"
+msgstr ""
+
+#: admin.py:151
+msgid "body html"
+msgstr ""
+
+#: apps.py:27
+msgid "Emails"
+msgstr ""
+
+#: models.py:56 models.py:243
+msgid "from email"
+msgstr ""
+
+#: models.py:62
+msgid "default to"
+msgstr ""
+
+#: models.py:63 models.py:70 models.py:77 models.py:84
+msgid "comma separated value"
+msgstr ""
+
+#: models.py:69
+msgid "default cc"
+msgstr ""
+
+#: models.py:76
+msgid "default bcc"
+msgstr ""
+
+#: models.py:83
+msgid "default reply_to"
+msgstr ""
+
+#: models.py:90
+msgid "name"
+msgstr ""
+
+#: models.py:94 models.py:216 models.py:275
+msgid "subject"
+msgstr ""
+
+#: models.py:102
+msgid "html body"
+msgstr ""
+
+#: models.py:106
+msgid "no reply"
+msgstr ""
+
+#: models.py:107
+msgid "should add a Reply-to with noreply@domain header"
+msgstr ""
+
+#: models.py:112
+msgid "notes"
+msgstr ""
+
+#: models.py:118
+msgid "email template"
+msgstr ""
+
+#: models.py:119
+msgid "email templates"
+msgstr ""
+
+#: models.py:212
+msgid "parent"
+msgstr ""
+
+#: models.py:229
+msgid "mail translation"
+msgstr ""
+
+#: models.py:230
+msgid "mail translations"
+msgstr ""
+
+#: models.py:249
+msgid "to emails"
+msgstr ""
+
+#: models.py:255
+msgid "cc emails"
+msgstr ""
+
+#: models.py:261
+msgid "bcc emails"
+msgstr ""
+
+#: models.py:266
+msgid "recipients"
+msgstr ""
+
+#: models.py:271
+msgid "headers"
+msgstr ""
+
+#: models.py:283
+msgid "raw message"
+msgstr ""
+
+#: models.py:287 models.py:310
+msgid "email"
+msgstr ""
+
+#: models.py:288
+msgid "emails"
+msgstr ""
+
+#: models.py:291
+#, python-format
+msgid ""
+"Email from \"%(from_email)s\" to \"%(to_emails)s\" sent at %(sent_at)s about "
+"\"%(subject)s\""
+msgstr ""
+
+#: models.py:317
+msgid "filename"
+msgstr ""
+
+#: models.py:323
+msgid "content"
+msgstr ""
+
+#: models.py:330
+msgid "mimetype"
+msgstr ""
+
+#: models.py:334
+msgid "attachment"
+msgstr ""
+
+#: models.py:335
+msgid "attachments"
+msgstr ""
