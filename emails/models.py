@@ -24,7 +24,7 @@
 from django.conf import settings
 from django.core.mail import get_connection, EmailMultiAlternatives
 from django.template import Template, RequestContext, Context
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils import six
 from django.contrib.sites.models import Site
 from fluo.db import models

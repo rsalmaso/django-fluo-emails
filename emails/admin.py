@@ -26,10 +26,10 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count
 from django.http import HttpResponse
-from django.utils.translation import ugettext as _
 from django.template.defaultfilters import linebreaks_filter
 from fluo import admin
 from fluo import forms
+from django.utils.translation import gettext_lazy as _
 from fluo.urls import reverse
 from .models import EmailTemplate, EmailTemplateTranslation, Email, Attachment
 
@@ -70,7 +70,7 @@ class AttachmentInlineAdmin(admin.TabularInline):
             'filename': str(obj.filename),
         }
         url = reverse(url_name, kwargs=kwargs)
-        return u'<a href="%(url)s">%(filename)s</a>' % {
+        return '<a href="%(url)s">%(filename)s</a>' % {
             'filename': obj.filename,
             'url': url,
         }
