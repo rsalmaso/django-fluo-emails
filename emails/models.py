@@ -121,7 +121,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
     def __str__(self):
         return self.name
 
-    def create(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False, language=None, subject=None, body=None):
+    def create(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False, language=None, subject=None, body=None):  # NOQA
         site = Site.objects.get_current()
         subject_template = Template(self.translate(language=language).subject if subject is None else subject)
         body_template = Template(self.translate(language=language).body if body is None else body)
@@ -136,19 +136,19 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         )
 
         if isinstance(to, six.string_types):
-            to = [ to ]
+            to = [to]
         elif self.default_to:
             to = self.default_to.split(',')
         if isinstance(cc, six.string_types):
-            cc = [ cc ]
+            cc = [cc]
         elif self.default_cc:
             cc = self.default_cc.split(',')
         if isinstance(bcc, six.string_types):
-            bcc = [ bcc ]
+            bcc = [bcc]
         elif self.default_bcc:
             bcc = self.default_bcc.split(',')
         if isinstance(reply_to, six.string_types):
-            reply_to = [ reply_to ]
+            reply_to = [reply_to]
         elif self.default_reply_to:
             reply_to = self.default_reply_to.split(',')
 
@@ -178,7 +178,7 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
 
         return email
 
-    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False, language=None, subject=None, body=None):
+    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False, language=None, subject=None, body=None):  # NOQA
         email = self.create(
             request=request,
             from_email=from_email,
@@ -265,7 +265,7 @@ class Email(models.TimestampModel):
         default='',
         verbose_name=_('recipients'),
     )
-    headers =  models.TextField(
+    headers = models.TextField(
         blank=True,
         default='',
         verbose_name=_('headers'),
@@ -284,7 +284,6 @@ class Email(models.TimestampModel):
     )
 
     class Meta:
-        #ordering = ('name',)
         verbose_name = _('email')
         verbose_name_plural = _('emails')
 
@@ -332,6 +331,5 @@ class Attachment(models.Model):
     )
 
     class Meta:
-        #ordering = ('name',)
         verbose_name = _('attachment')
         verbose_name_plural = _('attachments')

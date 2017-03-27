@@ -23,11 +23,13 @@
 
 import sys
 import threading
+
 from django.core.mail.backends.base import BaseEmailBackend
-from django.utils.encoding import smart_text
 from django.utils import six
+from django.utils.encoding import smart_text
 from django.utils.six.moves.email_mime_base import MIMEBase
-from .models import Email, Attachment
+
+from .models import Attachment, Email
 
 
 class EmailBackend(BaseEmailBackend):

@@ -22,34 +22,42 @@
 # Copyright (C) 2011 Stefan Foulis and contributors.
 
 from functools import update_wrapper
+
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count
 from django.http import HttpResponse
 from django.template.defaultfilters import linebreaks_filter
-from fluo import admin
-from fluo import forms
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from fluo import admin, forms
 from fluo.urls import reverse
-from .models import EmailTemplate, EmailTemplateTranslation, Email, Attachment
 
+from .models import Attachment, Email, EmailTemplate, EmailTemplateTranslation
 
 MAX_LANGUAGES = len(settings.LANGUAGES)
 
 
 class EmailTemplateTranslationForm(forms.ModelForm):
     pass
+
+
 class EmailTemplateTranslationInline(admin.StackedInline):
     model = EmailTemplateTranslation
     form = EmailTemplateTranslationForm
     extra = MAX_LANGUAGES
     max_num = MAX_LANGUAGES
+
+
 class EmailTemplateAdminForm(forms.ModelForm):
     pass
+
+
 class EmailTemplateAdmin(admin.ModelAdmin):
     form = EmailTemplateAdminForm
     inlines = (EmailTemplateTranslationInline,)
+
+
 admin.site.register(EmailTemplate, EmailTemplateAdmin)
 
 
@@ -75,12 +83,19 @@ class AttachmentInlineAdmin(admin.TabularInline):
             'filename': obj.filename,
             'url': url,
         })
+
+
 class EmailAdmin(admin.ModelAdmin):
     list_display = ['from_email', 'to_emails', 'subject', 'body_stripped', 'created_at', 'attachment_count']
     date_hierarchy = 'created_at'
-    search_fields =  ['from_email', 'to_emails', 'subject', 'body', 'body_html']
+    search_fields = ['from_email', 'to_emails', 'subject', 'body', 'body_html']
     exclude = ['raw', 'body']
-    readonly_fields = ['from_email', 'to_emails', 'cc_emails', 'bcc_emails', 'subject', 'created_at', 'all_recipients', 'headers', 'body', 'body_br']
+    readonly_fields = [
+        'created_at',
+        'all_recipients', 'from_email', 'to_emails', 'cc_emails', 'bcc_emails',
+        'headers',
+        'subject', 'body', 'body_br',
+    ]
     inlines = [AttachmentInlineAdmin]
 
     def queryset(self, request):
@@ -92,7 +107,7 @@ class EmailAdmin(admin.ModelAdmin):
     attachment_count.admin_order_field = 'attachment_count_cache'
 
     def body_stripped(self, obj):
-        if obj.body and len(obj.body)>100:
+        if obj.body and len(obj.body) > 100:
             return obj.body[:100] + ' [...]'
         return obj.body
     body_stripped.short_description = _('body[...]')
