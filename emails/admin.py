@@ -112,6 +112,7 @@ class EmailAdmin(admin.ModelAdmin):
 
     def attachment_count(self, obj):
         return obj.attachment_count
+    attachment_count.short_description = _('attachment count')
     attachment_count.admin_order_field = 'attachment_count_cache'
 
     def body_stripped(self, obj):
