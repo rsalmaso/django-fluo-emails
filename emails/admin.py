@@ -38,6 +38,14 @@ from .models import Attachment, Email, EmailTemplate, EmailTemplateTranslation
 MAX_LANGUAGES = len(settings.LANGUAGES)
 
 
+class CopyEmail(admin.CopyObject):
+    def update(self, request, instance, original):
+        instance.name = '{name} [new {count}]'.format(
+            name=original.name,
+            count=EmailTemplate.objects.filter(name__istartswith=original.name).count(),
+        )
+
+
 class EmailTemplateTranslationForm(forms.ModelForm):
     pass
 
@@ -55,6 +63,7 @@ class EmailTemplateAdminForm(forms.ModelForm):
 
 @admin.register(EmailTemplate)
 class EmailTemplateAdmin(admin.ModelAdmin):
+    actions = [CopyEmail()]
     form = EmailTemplateAdminForm
     inlines = (EmailTemplateTranslationInline,)
 
