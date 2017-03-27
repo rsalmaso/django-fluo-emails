@@ -29,6 +29,7 @@ from django.http import HttpResponse
 from django.template.defaultfilters import linebreaks_filter
 from fluo import admin
 from fluo import forms
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from fluo.urls import reverse
 from .models import EmailTemplate, EmailTemplateTranslation, Email, Attachment
@@ -70,11 +71,10 @@ class AttachmentInlineAdmin(admin.TabularInline):
             'filename': str(obj.filename),
         }
         url = reverse(url_name, kwargs=kwargs)
-        return '<a href="%(url)s">%(filename)s</a>' % {
+        return mark_safe('<a href="%(url)s">%(filename)s</a>' % {
             'filename': obj.filename,
             'url': url,
-        }
-    file_link.allow_tags = True
+        })
 class EmailAdmin(admin.ModelAdmin):
     list_display = ['from_email', 'to_emails', 'subject', 'body_stripped', 'created_at', 'attachment_count']
     date_hierarchy = 'created_at'
@@ -125,8 +125,7 @@ class EmailAdmin(admin.ModelAdmin):
         return response
 
     def body_br(self, obj):
-        return linebreaks_filter(obj.body)
-    body_br.allow_tags = True
+        return mark_safe(linebreaks_filter(obj.body))
     body_br.short_description = _('body html')
     body_br.admin_order_field = 'body html'
 
