@@ -115,8 +115,8 @@ class EmailAdmin(admin.ModelAdmin):
     attachment_count.admin_order_field = 'attachment_count_cache'
 
     def body_stripped(self, obj):
-    body_stripped.short_description = _('body[...]')
         return Truncator(obj).chars(120, truncate='...')
+    body_stripped.short_description = _('body')
     body_stripped.admin_order_field = 'body'
 
     def get_urls(self):
