@@ -53,12 +53,10 @@ class EmailTemplateAdminForm(forms.ModelForm):
     pass
 
 
+@admin.register(EmailTemplate)
 class EmailTemplateAdmin(admin.ModelAdmin):
     form = EmailTemplateAdminForm
     inlines = (EmailTemplateTranslationInline,)
-
-
-admin.site.register(EmailTemplate, EmailTemplateAdmin)
 
 
 class AttachmentInlineAdmin(admin.TabularInline):
