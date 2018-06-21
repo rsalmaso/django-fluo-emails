@@ -16,6 +16,7 @@ setup(
     version=emails.__version__,
     description='emails on database',
     long_description=long_description,
+    long_description_content_type="text/markdown",
     author=emails.__author__,
     author_email=emails.__email__,
     url='https://bitbucket.org/rsalmaso/django-fluo-emails',
