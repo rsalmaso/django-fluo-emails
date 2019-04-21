@@ -25,7 +25,6 @@ from django.conf import settings
 from django.core.mail import get_connection, EmailMultiAlternatives
 from django.template import Template, RequestContext, Context
 from django.utils.translation import gettext_lazy as _
-from django.utils import six
 from django.contrib.sites.models import Site
 from fluo.db import models
 
@@ -135,19 +134,19 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
             fail_silently=fail_silently,
         )
 
-        if isinstance(to, six.string_types):
+        if isinstance(to, str):
             to = [to]
         elif self.default_to:
             to = self.default_to.split(',')
-        if isinstance(cc, six.string_types):
+        if isinstance(cc, str):
             cc = [cc]
         elif self.default_cc:
             cc = self.default_cc.split(',')
-        if isinstance(bcc, six.string_types):
+        if isinstance(bcc, str):
             bcc = [bcc]
         elif self.default_bcc:
             bcc = self.default_bcc.split(',')
-        if isinstance(reply_to, six.string_types):
+        if isinstance(reply_to, str):
             reply_to = [reply_to]
         elif self.default_reply_to:
             reply_to = self.default_reply_to.split(',')

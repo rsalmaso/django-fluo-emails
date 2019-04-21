@@ -25,9 +25,8 @@ import sys
 import threading
 
 from django.core.mail.backends.base import BaseEmailBackend
-from django.utils import six
 from django.utils.encoding import smart_text
-from django.utils.six.moves.email_mime_base import MIMEBase
+from email.mime.base import MIMEBase
 
 from .models import Attachment, Email
 
@@ -40,12 +39,9 @@ class EmailBackend(BaseEmailBackend):
 
     def _write_message(self, message):
         msg = message.message()
-        if six.PY3:
-            msg_data = msg.as_bytes()
-            charset = msg.get_charset().get_output_charset() if msg.get_charset() else 'utf-8'
-            msg_data = msg_data.decode(charset)
-        else:
-            msg_data = smart_text(msg.as_string())
+        msg_data = msg.as_bytes()
+        charset = msg.get_charset().get_output_charset() if msg.get_charset() else 'utf-8'
+        msg_data = msg_data.decode(charset)
         self.stream.write('%s\n' % msg_data)
         self.stream.write('-' * 79)
         self.stream.write('\n')
