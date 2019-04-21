@@ -25,7 +25,7 @@ import sys
 import threading
 
 from django.core.mail.backends.base import BaseEmailBackend
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 from email.mime.base import MIMEBase
 
 from .models import Attachment, Email
@@ -56,7 +56,7 @@ class EmailBackend(BaseEmailBackend):
             all_recipients=', '.join(message.recipients()),
             subject=message.subject,
             body=message.body,
-            raw='%s' % smart_text(message.message().as_string()),
+            raw='%s' % smart_str(message.message().as_string()),
         )
         for attachment in message.attachments:
             if isinstance(attachment, tuple):
