@@ -38,9 +38,6 @@ class EmailTemplateQuerySet(models.QuerySet):
 
 
 class EmailTemplateManager(models.Manager.from_queryset(EmailTemplateQuerySet)):
-    use_for_related_fields = True
-    silence_use_for_related_fields_deprecation = True
-
     def send(self, name, **kwargs):
         mail = self.get(name=name)
         return mail.send(**kwargs)
