@@ -46,30 +46,29 @@ class EmailTemplateManager(models.Manager.from_queryset(EmailTemplateQuerySet)):
 class EmailTemplate(models.TimestampModel, models.I18NModel):
     objects = EmailTemplateManager()
 
-    from_email = models.CharField(max_length=255, default=_get_default_from_email, verbose_name=_("from email"))
-    default_to = models.CharField(
-        max_length=255, blank=True, null=True, verbose_name=_("default to"), help_text=_("comma separated value"),
+    from_email = models.StringField(default=_get_default_from_email, verbose_name=_("from email"))
+    default_to = models.StringField(
+        blank=True, verbose_name=_("default to"), help_text=_("comma separated value"),
     )
-    default_cc = models.CharField(
-        max_length=255, blank=True, null=True, verbose_name=_("default cc"), help_text=_("comma separated value"),
+    default_cc = models.StringField(
+        blank=True, verbose_name=_("default cc"), help_text=_("comma separated value"),
     )
-    default_bcc = models.CharField(
-        max_length=255, blank=True, null=True, verbose_name=_("default bcc"), help_text=_("comma separated value"),
+    default_bcc = models.StringField(
+        blank=True, verbose_name=_("default bcc"), help_text=_("comma separated value"),
     )
-    default_reply_to = models.CharField(
-        max_length=255, blank=True, null=True, verbose_name=_("default reply_to"), help_text=_("comma separated value"),
+    default_reply_to = models.StringField(
+        blank=True, verbose_name=_("default reply_to"), help_text=_("comma separated value"),
     )
-    name = models.CharField(max_length=255, unique=True, db_index=True, verbose_name=_("name"))
-    subject = models.CharField(max_length=255, verbose_name=_("subject"))
+    name = models.StringField(unique=True, db_index=True, verbose_name=_("name"))
+    subject = models.StringField(verbose_name=_("subject"))
     body = models.TextField(verbose_name=_("body"))
-    body_html = models.TextField(blank=True, default="", verbose_name=_("html body"))
+    body_html = models.TextField(blank=True, verbose_name=_("html body"))
     noreply = models.BooleanField(
         default=False, verbose_name=_("no reply"), help_text=_("should add a Reply-to with noreply@domain header"),
     )
-    notes = models.TextField(blank=True, null=True, verbose_name=_("notes"))
+    notes = models.TextField(blank=True, verbose_name=_("notes"))
 
     class Meta:
-        base_manager_name = "objects"
         ordering = ["name"]
         verbose_name = _("email template")
         verbose_name_plural = _("email templates")
@@ -202,9 +201,9 @@ class EmailTemplateTranslation(models.TranslationModel):
     parent = models.ForeignKey(
         EmailTemplate, on_delete=models.CASCADE, related_name="translations", verbose_name=_("parent"),
     )
-    subject = models.CharField(max_length=255, verbose_name=_("subject"))
+    subject = models.StringField(verbose_name=_("subject"))
     body = models.TextField(verbose_name=_("body"))
-    body_html = models.TextField(blank=True, default="", verbose_name=_("body"))
+    body_html = models.TextField(blank=True, verbose_name=_("body"))
 
     class Meta:
         unique_together = [("language", "parent")]
@@ -219,15 +218,15 @@ class EmailTemplateTranslation(models.TranslationModel):
 
 
 class Email(models.TimestampModel):
-    from_email = models.CharField(max_length=255, default=_get_default_from_email, verbose_name=_("from email"))
-    to_emails = models.CharField(max_length=255, blank=True, default="", verbose_name=_("to emails"))
-    cc_emails = models.CharField(max_length=255, blank=True, default="", verbose_name=_("cc emails"))
-    bcc_emails = models.CharField(max_length=255, blank=True, default="", verbose_name=_("bcc emails"))
-    all_recipients = models.TextField(blank=True, default="", verbose_name=_("recipients"))
-    headers = models.TextField(blank=True, default="", verbose_name=_("headers"))
-    subject = models.CharField(max_length=255, verbose_name=_("subject"))
+    from_email = models.StringField(default=_get_default_from_email, verbose_name=_("from email"))
+    to_emails = models.StringField(blank=True,  verbose_name=_("to emails"))
+    cc_emails = models.StringField(blank=True,  verbose_name=_("cc emails"))
+    bcc_emails = models.StringField(blank=True, verbose_name=_("bcc emails"))
+    all_recipients = models.TextField(blank=True, verbose_name=_("recipients"))
+    headers = models.TextField(blank=True, verbose_name=_("headers"))
+    subject = models.StringField(verbose_name=_("subject"))
     body = models.TextField(verbose_name=_("body"))
-    raw = models.TextField(blank=True, default="", verbose_name=_("raw message"))
+    raw = models.TextField(blank=True, verbose_name=_("raw message"))
 
     class Meta:
         verbose_name = _("email")
@@ -250,9 +249,9 @@ class Email(models.TimestampModel):
 
 class Attachment(models.Model):
     email = models.ForeignKey(Email, on_delete=models.CASCADE, related_name="attachments", verbose_name=_("email"))
-    filename = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name=_("filename"))
+    filename = models.StringField(blank=True, verbose_name=_("filename"))
     content = models.BinaryField(null=True, blank=True, default=None, verbose_name=_("content"))
-    mimetype = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name=_("mimetype"))
+    mimetype = models.StringField(blank=True, verbose_name=_("mimetype"))
 
     class Meta:
         verbose_name = _("attachment")
