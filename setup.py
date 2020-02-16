@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-from setuptools import setup, find_packages
 import io
-import emails
 
+import emails
+from setuptools import find_packages, setup
 
 with io.open("README.md", "rt", encoding="utf-8") as fp:
     long_description = fp.read()

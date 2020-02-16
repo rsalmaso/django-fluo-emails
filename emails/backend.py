@@ -23,40 +23,40 @@
 
 import sys
 import threading
+from email.mime.base import MIMEBase
 
 from django.core.mail.backends.base import BaseEmailBackend
 from django.utils.encoding import smart_str
-from email.mime.base import MIMEBase
 
 from .models import Attachment, Email
 
 
 class EmailBackend(BaseEmailBackend):
     def __init__(self, *args, **kwargs):
-        self.stream = kwargs.pop('stream', sys.stdout)
+        self.stream = kwargs.pop("stream", sys.stdout)
         self._lock = threading.RLock()
         super().__init__(*args, **kwargs)
 
     def _write_message(self, message):
         msg = message.message()
         msg_data = msg.as_bytes()
-        charset = msg.get_charset().get_output_charset() if msg.get_charset() else 'utf-8'
+        charset = msg.get_charset().get_output_charset() if msg.get_charset() else "utf-8"
         msg_data = msg_data.decode(charset)
-        self.stream.write('%s\n' % msg_data)
-        self.stream.write('-' * 79)
-        self.stream.write('\n')
+        self.stream.write("%s\n" % msg_data)
+        self.stream.write("-" * 79)
+        self.stream.write("\n")
         self.stream.flush()  # flush after each message
 
     def _save_on_db(self, message):
         email = Email.objects.create(
-            from_email='%s' % message.from_email,
-            to_emails=', '.join(message.to),
-            cc_emails=', '.join(message.cc),
-            bcc_emails=', '.join(message.bcc),
-            all_recipients=', '.join(message.recipients()),
+            from_email="%s" % message.from_email,
+            to_emails=", ".join(message.to),
+            cc_emails=", ".join(message.cc),
+            bcc_emails=", ".join(message.bcc),
+            all_recipients=", ".join(message.recipients()),
             subject=message.subject,
             body=message.body,
-            raw='%s' % smart_str(message.message().as_string()),
+            raw="%s" % smart_str(message.message().as_string()),
         )
         for attachment in message.attachments:
             if isinstance(attachment, tuple):
@@ -67,12 +67,7 @@ class EmailBackend(BaseEmailBackend):
                 mimetype = None
             else:
                 continue
-            Attachment.objects.create(
-                email=email,
-                filename=filename,
-                content=content,
-                mimetype=mimetype
-            )
+            Attachment.objects.create(email=email, filename=filename, content=content, mimetype=mimetype)
 
     def send_messages(self, email_messages):
         if not email_messages:
@@ -86,11 +81,11 @@ class EmailBackend(BaseEmailBackend):
                     self._save_on_db(message)
                     try:
                         self._write_message(message)
-                    except:
+                    except Exception:
                         pass
                 if stream_created:
                     self.close()
-            except:
+            except Exception:
                 if not self.fail_silently:
                     raise
 

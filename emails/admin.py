@@ -41,9 +41,8 @@ MAX_LANGUAGES = len(settings.LANGUAGES)
 
 class CopyEmail(admin.CopyObject):
     def update(self, request, instance, original):
-        instance.name = '{name} [new {count}]'.format(
-            name=original.name,
-            count=EmailTemplate.objects.filter(name__istartswith=original.name).count(),
+        instance.name = "{name} [new {count}]".format(
+            name=original.name, count=EmailTemplate.objects.filter(name__istartswith=original.name).count(),
         )
 
 
@@ -66,7 +65,7 @@ class EmailTemplateAdminForm(forms.ModelForm):
 class EmailTemplateAdmin(admin.ModelAdmin):
     actions = [CopyEmail()]
     form = EmailTemplateAdminForm
-    inlines = (EmailTemplateTranslationInline,)
+    inlines = [EmailTemplateTranslationInline]
 
 
 class AttachmentInlineAdmin(admin.TabularInline):
@@ -74,51 +73,56 @@ class AttachmentInlineAdmin(admin.TabularInline):
     extra = 0
     can_delete = False
     max_num = 0
-    readonly_fields = ['filename', 'mimetype', 'content', 'file_link']
-    fields = ['file_link', 'mimetype']
+    readonly_fields = ["filename", "mimetype", "content", "file_link"]
+    fields = ["file_link", "mimetype"]
 
     def file_link(self, obj):
         if obj.pk is None:
-            return ''
-        url_name = '%s:%s_email_attachment' % (self.admin_site.name, self.model._meta.app_label)
+            return ""
+        url_name = "%s:%s_email_attachment" % (self.admin_site.name, self.model._meta.app_label)
         kwargs = {
-            'email_id': str(obj.email_id),
-            'attachment_id': str(obj.id),
-            'filename': str(obj.filename),
+            "email_id": str(obj.email_id),
+            "attachment_id": str(obj.id),
+            "filename": str(obj.filename),
         }
         url = reverse(url_name, kwargs=kwargs)
-        return mark_safe('<a href="%(url)s">%(filename)s</a>' % {
-            'filename': obj.filename,
-            'url': url,
-        })
+        return mark_safe('<a href="%(url)s">%(filename)s</a>' % {"filename": obj.filename, "url": url})
 
 
 class EmailAdmin(admin.ModelAdmin):
-    list_display = ['from_email', 'to_emails', 'subject', 'body_stripped', 'created_at', 'attachment_count']
-    date_hierarchy = 'created_at'
-    search_fields = ['from_email', 'to_emails', 'subject', 'body', 'body_html']
-    exclude = ['raw', 'body']
+    list_display = ["from_email", "to_emails", "subject", "body_stripped", "created_at", "attachment_count"]
+    date_hierarchy = "created_at"
+    search_fields = ["from_email", "to_emails", "subject", "body", "body_html"]
+    exclude = ["raw", "body"]
     readonly_fields = [
-        'created_at',
-        'all_recipients', 'from_email', 'to_emails', 'cc_emails', 'bcc_emails',
-        'headers',
-        'subject', 'body', 'body_br',
+        "created_at",
+        "all_recipients",
+        "from_email",
+        "to_emails",
+        "cc_emails",
+        "bcc_emails",
+        "headers",
+        "subject",
+        "body",
+        "body_br",
     ]
     inlines = [AttachmentInlineAdmin]
 
     def queryset(self, request):
         queryset = super().queryset(request)
-        return queryset.annotate(attachment_count_cache=Count('attachments'))
+        return queryset.annotate(attachment_count_cache=Count("attachments"))
 
     def attachment_count(self, obj):
         return obj.attachment_count
-    attachment_count.short_description = _('attachment count')
-    attachment_count.admin_order_field = 'attachment_count_cache'
+
+    attachment_count.short_description = _("attachment count")
+    attachment_count.admin_order_field = "attachment_count_cache"
 
     def body_stripped(self, obj):
-        return Truncator(obj).chars(120, truncate='...')
-    body_stripped.short_description = _('body')
-    body_stripped.admin_order_field = 'body'
+        return Truncator(obj).chars(120, truncate="...")
+
+    body_stripped.short_description = _("body")
+    body_stripped.admin_order_field = "body"
 
     def get_urls(self):
         urlpatterns = super().get_urls()
@@ -127,14 +131,17 @@ class EmailAdmin(admin.ModelAdmin):
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
+
             return update_wrapper(wrapper, view)
 
         appname = self.model._meta.app_label
 
         urlpatterns = [
-            url(r'^(?P<email_id>\d+)/attachments/(?P<attachment_id>\d+)/(?P<filename>[\w.]+)$',
+            url(
+                r"^(?P<email_id>\d+)/attachments/(?P<attachment_id>\d+)/(?P<filename>[\w.]+)$",
                 wrap(self.serve_attachment),
-                name='%s_email_attachment' % appname)
+                name="%s_email_attachment" % appname,
+            )
         ] + urlpatterns
         return urlpatterns
 
@@ -142,15 +149,16 @@ class EmailAdmin(admin.ModelAdmin):
         if not self.has_change_permission(request, None):
             raise PermissionDenied
         attachment = Attachment.objects.get(email__id=email_id, id=attachment_id, filename=filename)
-        response = HttpResponse(attachment.content, content_type=attachment.mimetype or 'application/octet-stream')
+        response = HttpResponse(attachment.content, content_type=attachment.mimetype or "application/octet-stream")
         response["Content-Length"] = len(attachment.content)
         return response
 
     def body_br(self, obj):
         return mark_safe(linebreaks_filter(obj.body))
-    body_br.short_description = _('body html')
-    body_br.admin_order_field = 'body html'
+
+    body_br.short_description = _("body html")
+    body_br.admin_order_field = "body html"
 
 
-if settings.EMAIL_BACKEND == 'emails.backend.EmailBackend':
+if settings.EMAIL_BACKEND == "emails.backend.EmailBackend":
     admin.site.register(Email, EmailAdmin)

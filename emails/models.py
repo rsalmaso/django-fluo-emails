@@ -22,10 +22,10 @@
 # Copyright (C) 2011 Stefan Foulis and contributors.
 
 from django.conf import settings
-from django.core.mail import get_connection, EmailMultiAlternatives
-from django.template import Template, RequestContext, Context
-from django.utils.translation import gettext_lazy as _
 from django.contrib.sites.models import Site
+from django.core.mail import EmailMultiAlternatives, get_connection
+from django.template import Context, RequestContext, Template
+from django.utils.translation import gettext_lazy as _
 from fluo.db import models
 
 
@@ -49,78 +49,58 @@ class EmailTemplateManager(models.Manager.from_queryset(EmailTemplateQuerySet)):
 class EmailTemplate(models.TimestampModel, models.I18NModel):
     objects = EmailTemplateManager()
 
-    from_email = models.CharField(
-        max_length=255,
-        default=_get_default_from_email,
-        verbose_name=_('from email'),
-    )
+    from_email = models.CharField(max_length=255, default=_get_default_from_email, verbose_name=_("from email"))
     default_to = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True,
-        verbose_name=_('default to'),
-        help_text=_('comma separated value'),
+        max_length=255, blank=True, null=True, verbose_name=_("default to"), help_text=_("comma separated value"),
     )
     default_cc = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True,
-        verbose_name=_('default cc'),
-        help_text=_('comma separated value'),
+        max_length=255, blank=True, null=True, verbose_name=_("default cc"), help_text=_("comma separated value"),
     )
     default_bcc = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True,
-        verbose_name=_('default bcc'),
-        help_text=_('comma separated value'),
+        max_length=255, blank=True, null=True, verbose_name=_("default bcc"), help_text=_("comma separated value"),
     )
     default_reply_to = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True,
-        verbose_name=_('default reply_to'),
-        help_text=_('comma separated value'),
+        max_length=255, blank=True, null=True, verbose_name=_("default reply_to"), help_text=_("comma separated value"),
     )
-    name = models.CharField(
-        max_length=255,
-        unique=True,
-        db_index=True,
-        verbose_name=_('name'),
-    )
-    subject = models.CharField(
-        max_length=255,
-        verbose_name=_('subject'),
-    )
-    body = models.TextField(
-        verbose_name=_('body'),
-    )
-    body_html = models.TextField(
-        blank=True,
-        default='',
-        verbose_name=_('html body'),
-    )
+    name = models.CharField(max_length=255, unique=True, db_index=True, verbose_name=_("name"))
+    subject = models.CharField(max_length=255, verbose_name=_("subject"))
+    body = models.TextField(verbose_name=_("body"))
+    body_html = models.TextField(blank=True, default="", verbose_name=_("html body"))
     noreply = models.BooleanField(
-        default=False,
-        verbose_name=_("no reply"),
-        help_text=_("should add a Reply-to with noreply@domain header"),
+        default=False, verbose_name=_("no reply"), help_text=_("should add a Reply-to with noreply@domain header"),
     )
-    notes = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name=_("notes"),
-    )
+    notes = models.TextField(blank=True, null=True, verbose_name=_("notes"))
 
     class Meta:
         base_manager_name = "objects"
-        ordering = ['name']
-        verbose_name = _('email template')
-        verbose_name_plural = _('email templates')
+        ordering = ["name"]
+        verbose_name = _("email template")
+        verbose_name_plural = _("email templates")
 
     def __str__(self):
         return self.name
 
-    def create(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False, language=None, subject=None, body=None):  # NOQA
+    def create(
+        self,
+        request=None,
+        from_email=None,
+        to=None,
+        cc=None,
+        bcc=None,
+        reply_to=None,
+        context=None,
+        attachments=None,
+        alternatives=None,
+        fail_silently=True,
+        auth_user=None,
+        auth_password=None,
+        connection=None,
+        headers=None,
+        noreply=False,
+        language=None,
+        subject=None,
+        body=None,
+    ):  # NOQA
         site = Site.objects.get_current()
         subject_template = Template(self.translate(language=language).subject if subject is None else subject)
         body_template = Template(self.translate(language=language).body if body is None else body)
@@ -129,55 +109,73 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
         context = Context(context) if request is None else RequestContext(request, context)
 
         connection = connection or get_connection(
-            username=auth_user,
-            password=auth_password,
-            fail_silently=fail_silently,
+            username=auth_user, password=auth_password, fail_silently=fail_silently,
         )
 
         if isinstance(to, str):
             to = [to]
         elif self.default_to:
-            to = self.default_to.split(',')
+            to = self.default_to.split(",")
         if isinstance(cc, str):
             cc = [cc]
         elif self.default_cc:
-            cc = self.default_cc.split(',')
+            cc = self.default_cc.split(",")
         if isinstance(bcc, str):
             bcc = [bcc]
         elif self.default_bcc:
-            bcc = self.default_bcc.split(',')
+            bcc = self.default_bcc.split(",")
         if isinstance(reply_to, str):
             reply_to = [reply_to]
         elif self.default_reply_to:
-            reply_to = self.default_reply_to.split(',')
+            reply_to = self.default_reply_to.split(",")
 
         headers = headers = {} if headers is None else headers
         noreply = noreply or self.noreply
-        if noreply and not reply_to and 'Reply-to' not in headers:
-            reply_to = ['noreply@%s' % site.domain]
+        if noreply and not reply_to and "Reply-to" not in headers:
+            reply_to = ["noreply@%s" % site.domain]
 
         kwargs = {
-            'subject': subject_template.render(context).replace("\n", ""),
-            'body': body_template.render(context),
-            'from_email': self.from_email if from_email is None else from_email,
-            'to': to,
-            'cc': cc,
-            'bcc': bcc,
-            'reply_to': reply_to,
-            'headers': headers,
-            'connection': connection,
-            'attachments': attachments,
-            'alternatives': alternatives,
+            "subject": subject_template.render(context).replace("\n", ""),
+            "body": body_template.render(context),
+            "from_email": self.from_email if from_email is None else from_email,
+            "to": to,
+            "cc": cc,
+            "bcc": bcc,
+            "reply_to": reply_to,
+            "headers": headers,
+            "connection": connection,
+            "attachments": attachments,
+            "alternatives": alternatives,
         }
 
         email = EmailMultiAlternatives(**kwargs)
         if self.body_html:
             body_html_template = Template(self.translate(language=language).body_html)
-            email.attach_alternative(body_html_template.render(context), 'text/html')
+            email.attach_alternative(body_html_template.render(context), "text/html")
 
         return email
 
-    def send(self, request=None, from_email=None, to=None, cc=None, bcc=None, reply_to=None, context=None, attachments=None, alternatives=None, fail_silently=True, auth_user=None, auth_password=None, connection=None, headers=None, noreply=False, language=None, subject=None, body=None):  # NOQA
+    def send(
+        self,
+        request=None,
+        from_email=None,
+        to=None,
+        cc=None,
+        bcc=None,
+        reply_to=None,
+        context=None,
+        attachments=None,
+        alternatives=None,
+        fail_silently=True,
+        auth_user=None,
+        auth_password=None,
+        connection=None,
+        headers=None,
+        noreply=False,
+        language=None,
+        subject=None,
+        body=None,
+    ):  # NOQA
         email = self.create(
             request=request,
             from_email=from_email,
@@ -205,130 +203,60 @@ class EmailTemplate(models.TimestampModel, models.I18NModel):
 
 class EmailTemplateTranslation(models.TranslationModel):
     parent = models.ForeignKey(
-        EmailTemplate,
-        on_delete=models.CASCADE,
-        related_name='translations',
-        verbose_name=_('parent'),
+        EmailTemplate, on_delete=models.CASCADE, related_name="translations", verbose_name=_("parent"),
     )
-    subject = models.CharField(
-        max_length=255,
-        verbose_name=_('subject'),
-    )
-    body = models.TextField(
-        verbose_name=_('body'),
-    )
-    body_html = models.TextField(
-        blank=True,
-        default='',
-        verbose_name=_('body'),
-    )
+    subject = models.CharField(max_length=255, verbose_name=_("subject"))
+    body = models.TextField(verbose_name=_("body"))
+    body_html = models.TextField(blank=True, default="", verbose_name=_("body"))
 
     class Meta:
-        unique_together = [('language', 'parent')]
-        verbose_name = _('mail translation')
-        verbose_name_plural = _('mail translations')
+        unique_together = [("language", "parent")]
+        verbose_name = _("mail translation")
+        verbose_name_plural = _("mail translations")
 
     def __str__(self):
         return "%(name)s [%(lang)s]" % {
-            'name': self.parent.name,
-            'lang': self.language[:2],
+            "name": self.parent.name,
+            "lang": self.language[:2],
         }
 
 
 class Email(models.TimestampModel):
-    from_email = models.CharField(
-        max_length=255,
-        default=_get_default_from_email,
-        verbose_name=_('from email'),
-    )
-    to_emails = models.CharField(
-        max_length=255,
-        blank=True,
-        default='',
-        verbose_name=_('to emails'),
-    )
-    cc_emails = models.CharField(
-        max_length=255,
-        blank=True,
-        default='',
-        verbose_name=_('cc emails'),
-    )
-    bcc_emails = models.CharField(
-        max_length=255,
-        blank=True,
-        default='',
-        verbose_name=_('bcc emails'),
-    )
-    all_recipients = models.TextField(
-        blank=True,
-        default='',
-        verbose_name=_('recipients'),
-    )
-    headers = models.TextField(
-        blank=True,
-        default='',
-        verbose_name=_('headers'),
-    )
-    subject = models.CharField(
-        max_length=255,
-        verbose_name=_('subject'),
-    )
-    body = models.TextField(
-        verbose_name=_('body'),
-    )
-    raw = models.TextField(
-        blank=True,
-        default='',
-        verbose_name=_('raw message'),
-    )
+    from_email = models.CharField(max_length=255, default=_get_default_from_email, verbose_name=_("from email"))
+    to_emails = models.CharField(max_length=255, blank=True, default="", verbose_name=_("to emails"))
+    cc_emails = models.CharField(max_length=255, blank=True, default="", verbose_name=_("cc emails"))
+    bcc_emails = models.CharField(max_length=255, blank=True, default="", verbose_name=_("bcc emails"))
+    all_recipients = models.TextField(blank=True, default="", verbose_name=_("recipients"))
+    headers = models.TextField(blank=True, default="", verbose_name=_("headers"))
+    subject = models.CharField(max_length=255, verbose_name=_("subject"))
+    body = models.TextField(verbose_name=_("body"))
+    raw = models.TextField(blank=True, default="", verbose_name=_("raw message"))
 
     class Meta:
-        verbose_name = _('email')
-        verbose_name_plural = _('emails')
+        verbose_name = _("email")
+        verbose_name_plural = _("emails")
 
     def __str__(self):
         return _('Email from "%(from_email)s" to "%(to_emails)s" sent at %(sent_at)s about "%(subject)s"') % {
-            'from_email': self.from_email,
-            'to_emails': self.to_emails,
-            'sent_at': self.created_at,
-            'subject': self.subject,
+            "from_email": self.from_email,
+            "to_emails": self.to_emails,
+            "sent_at": self.created_at,
+            "subject": self.subject,
         }
 
     @property
     def attachment_count(self):
-        if not hasattr(self, 'attachment_count_cache'):
+        if not hasattr(self, "attachment_count_cache"):
             self.attachment_count_cache = self.attachments.count()
         return self.attachment_count_cache
 
 
 class Attachment(models.Model):
-    email = models.ForeignKey(
-        Email,
-        on_delete=models.CASCADE,
-        related_name='attachments',
-        verbose_name=_('email'),
-    )
-    filename = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-        default=None,
-        verbose_name=_('filename'),
-    )
-    content = models.BinaryField(
-        null=True,
-        blank=True,
-        default=None,
-        verbose_name=_('content'),
-    )
-    mimetype = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-        default=None,
-        verbose_name=_('mimetype'),
-    )
+    email = models.ForeignKey(Email, on_delete=models.CASCADE, related_name="attachments", verbose_name=_("email"))
+    filename = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name=_("filename"))
+    content = models.BinaryField(null=True, blank=True, default=None, verbose_name=_("content"))
+    mimetype = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name=_("mimetype"))
 
     class Meta:
-        verbose_name = _('attachment')
-        verbose_name_plural = _('attachments')
+        verbose_name = _("attachment")
+        verbose_name_plural = _("attachments")
