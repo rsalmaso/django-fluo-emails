@@ -53,7 +53,7 @@ class EmailTemplateTranslationForm(forms.ModelForm):
 class EmailTemplateTranslationInline(admin.StackedInline):
     model = EmailTemplateTranslation
     form = EmailTemplateTranslationForm
-    extra = MAX_LANGUAGES
+    extra = 0
     max_num = MAX_LANGUAGES
 
 
